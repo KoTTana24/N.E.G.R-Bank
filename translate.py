@@ -3,7 +3,7 @@
 import os
 
 class Translate:
-    USER_LANG = "ru"  # язык по умолчанию
+    USER_LANG = "en"  # default languege
 
     @staticmethod
     def get_user_lang():

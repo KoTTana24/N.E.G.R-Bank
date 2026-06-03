@@ -1,63 +1,57 @@
-import sys
+from PySide6 import QtWidgets, QtCore
 from translate import Translate
 from style import Style
-from PySide6 import QtCore, QtWidgets
+from game_data import GameData
 
 class MainWindow(QtWidgets.QWidget):
-    
     def __init__(self):
-
         super().__init__()
-        self.player_balance = 0
-        self.player_level = 1
-
-        self.main_text = QtWidgets.QLabel(Translate.ru_eng(f"Ваш баланс {self.player_balance}",
-            f"Your balance is {self.player_balance}"), alignment=QtCore.Qt.AlignCenter
-        )
-        self.main_text.setText(Translate.ru_eng(f"Ваш баланс {self.player_balance}",
-            f"Your balance is {self.player_balance}"))
-
-        self.up_level_text = QtWidgets.QLabel(Translate.ru_eng(f"Уровень пользователя: {self.player_level}",
-                                                               f"Curent level is: {self.player_level}"), alignment=QtCore.Qt.AlignCenter)
-
-        self.balance_plus_button = QtWidgets.QPushButton(Translate.ru_eng("Нажмите для получения денег!",
-                                                                          "Click to get money!"))
-        self.up_level_button = QtWidgets.QPushButton(Translate.ru_eng("Нажмите для улучшения уровня",
-                                                                      "Click to upgrade your level"))
-        Style.style(self)
-
+        self.setWindowTitle("Tapping Game")
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.main_text)
-        self.layout.addWidget(self.up_level_text)
-        self.layout.addWidget(self.up_level_button)
-        self.layout.addWidget(self.balance_plus_button)
+        
+        self.menu_button = QtWidgets.QPushButton(
+        Translate.ru_eng("В меню", "Menu")
+        )
 
-        self.up_level_button.clicked.connect(self.up_level)
-        self.balance_plus_button.clicked.connect(self.balance_plus)
+        self.menu_button.clicked.connect(self.back_to_menu)
+        self.balance_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
+        self.level_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
+        self.tap_button = QtWidgets.QPushButton(Translate.ru_eng("Нажми!", "Click!"))
+        self.tap_button.clicked.connect(self.tap)
+        
+        self.layout.addWidget(self.menu_button)
+        self.layout.addWidget(self.balance_label)
+        self.layout.addWidget(self.level_label)
+        self.layout.addWidget(self.tap_button)
 
-    @QtCore.Slot()
-    def balance_plus(self):
-        self.player_balance += self.player_level
+        Style.style(self)
         self.update_ui()
-    def up_level(self):
-        if self.player_balance >= self.player_level * 100:
-            self.player_balance -= self.player_level * 100
-            self.player_level += 1
-            self.main_text.setText(Translate.ru_eng("Уровень улучшен!", "Level is upgrade!"))
-    
-        else:
-            self.main_text.setText(Translate.ru_eng("Баланс слишком маленький для улучшения",
-                                                    "Balance is too small to upgrade"))
+        
+    def back_to_menu(self):
+        from main_menu import MainMenu
+
+        self.menu = MainMenu()
+        self.menu.show()
+        self.close()
+
+    def tap(self):
+        # Добавляем очки к балансу
+        GameData.balance += GameData.level
+
+        # Проверяем возможность повышения уровня
+        threshold = GameData.level * 100
+        if GameData.balance >= threshold:
+            GameData.balance -= threshold
+            GameData.level += 1
+
+        # Сохраняем прогресс
+        GameData.save()
+        self.update_ui()
 
     def update_ui(self):
-        self.main_text.setText(Translate.ru_eng(
-        f"Ваш баланс {self.player_balance}",
-        f"Your balance is {self.player_balance}"
-    ))
-        self.up_level_text.setText(Translate.ru_eng(
-        f"Нынешний уровень {self.player_level}",
-        f"Current level is {self.player_level}"
-    ))
-
-
-
+        self.balance_label.setText(
+            Translate.ru_eng(f"Баланс: {GameData.balance}", f"Balance: {GameData.balance}")
+        )
+        self.level_label.setText(
+            Translate.ru_eng(f"Уровень: {GameData.level}", f"Level: {GameData.level}")
+        )

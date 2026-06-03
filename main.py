@@ -1,14 +1,14 @@
 import sys
 from PySide6 import QtWidgets
-from translate import Translate
-from welcome_window_ui import WelcomeWindow
-from main_window import MainWindow
+from game_data import GameData
+from welcome_window import WelcomeWindow
 
 if __name__ == "__main__":
+    GameData.load()
+
     app = QtWidgets.QApplication([])
 
-    # Создаём экран приветствия
-    welcome_window = WelcomeWindow()
-    welcome_window.show()
+    welcome = WelcomeWindow()
+    welcome.show()
 
     sys.exit(app.exec())
