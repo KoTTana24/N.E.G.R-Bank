@@ -2,9 +2,9 @@ import sys
 from PySide6 import QtWidgets, QtCore
 from translate import Translate
 from style import Style
-from main import MainWindow 
+from main_window import MainWindow 
 
-class WelcomeScreen(QtWidgets.QWidget):
+class WelcomeWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
 
