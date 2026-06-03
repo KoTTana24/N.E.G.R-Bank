@@ -1,7 +1,45 @@
 import sys
+from translate import Translate
 from PySide6 import QtCore, QtWidgets
 
 class MainWindow(QtWidgets.QWidget):
+    
+    def __init__(self):
+
+        super().__init__()
+        self.player_balance = 0
+        self.player_level = 1
+
+        self.main_text = QtWidgets.QLabel(
+            f"Your balance is {self.player_balance}", alignment=QtCore.Qt.AlignCenter
+        )
+        self.up_level_text = QtWidgets.QLabel(f"Curent level is {self.player_level}. Click to power up level", alignment=QtCore.Qt.AlignCenter
+        )
+        self.balance_plus_button = QtWidgets.QPushButton("Click to get money!")
+        self.up_level_button = QtWidgets.QPushButton("Click to upgrade your level")
+        self.style()
+
+        self.layout = QtWidgets.QVBoxLayout(self)
+        self.layout.addWidget(self.main_text)
+        self.layout.addWidget(self.up_level_text)
+        self.layout.addWidget(self.up_level_button)
+        self.layout.addWidget(self.balance_plus_button)
+
+        self.up_level_button.clicked.connect(self.up_level)
+        self.balance_plus_button.clicked.connect(self.balance_plus)
+
+    @QtCore.Slot()
+    def balance_plus(self):
+        self.player_balance += self.player_level
+        self.main_text.setText(f"Your balance is {self.player_balance}")
+    def up_level(self):
+        if self.player_balance >= self.player_level * 100:
+            self.player_balance -= self.player_level * 100
+            self.player_level += 1
+            self.up_level_text.setText(f"Curent level is {self.player_level}")
+            self.main_text.setText("level is upgrade!")
+        else:
+            self.main_text.setText("balance is too small to upgrade")
     def style(self):
         gruvbox_black = "#282828"
         gruvbox_blue = "#83a598"
@@ -44,42 +82,6 @@ class MainWindow(QtWidgets.QWidget):
             }}
         """)
 
-    def __init__(self):
-
-        super().__init__()
-        self.player_balance = 0
-        self.player_level = 1
-
-        self.main_text = QtWidgets.QLabel(
-            f"Your balance is {self.player_balance}", alignment=QtCore.Qt.AlignCenter
-        )
-        self.up_level_text = QtWidgets.QLabel(f"Curent level is {self.player_level}. Click to power up level", alignment=QtCore.Qt.AlignCenter
-        )
-        self.balance_plus_button = QtWidgets.QPushButton("Click to get money!")
-        self.up_level_button = QtWidgets.QPushButton("Click to upgrade your level")
-        self.style()
-
-        self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(self.main_text)
-        self.layout.addWidget(self.up_level_text)
-        self.layout.addWidget(self.up_level_button)
-        self.layout.addWidget(self.balance_plus_button)
-
-        self.up_level_button.clicked.connect(self.up_level)
-        self.balance_plus_button.clicked.connect(self.balance_plus)
-
-    @QtCore.Slot()
-    def balance_plus(self):
-        self.player_balance += self.player_level
-        self.main_text.setText(f"Your balance is {self.player_balance}")
-    def up_level(self):
-        if self.player_balance >= self.player_level * 100:
-            self.player_balance -= self.player_level * 100
-            self.player_level += 1
-            self.up_level_text.setText(f"Curent level is {self.player_level}")
-            self.main_text.setText("level is upgrade!")
-        else:
-            self.main_text.setText("balance is too small to upgrade")
 
 
 
@@ -89,3 +91,5 @@ if __name__ == "__main__":
     widget.resize(400, 300)
     widget.show()
     sys.exit(app.exec())
+
+
