@@ -10,13 +10,19 @@ class MainWindow(QtWidgets.QWidget):
         self.player_balance = 0
         self.player_level = 1
 
-        self.main_text = QtWidgets.QLabel(
-            f"Your balance is {self.player_balance}", alignment=QtCore.Qt.AlignCenter
+        self.main_text = QtWidgets.QLabel(Translate.ru_eng(f"Ваш баланс {self.player_balance}",
+            f"Your balance is {self.player_balance}"), alignment=QtCore.Qt.AlignCenter
         )
-        self.up_level_text = QtWidgets.QLabel(f"Curent level is {self.player_level}. Click to power up level", alignment=QtCore.Qt.AlignCenter
-        )
-        self.balance_plus_button = QtWidgets.QPushButton("Click to get money!")
-        self.up_level_button = QtWidgets.QPushButton("Click to upgrade your level")
+        self.main_text.setText(Translate.ru_eng(f"Ваш баланс {self.player_balance}",
+            f"Your balance is {self.player_balance}"))
+
+        self.up_level_text = QtWidgets.QLabel(Translate.ru_eng(f"Уровень пользователя: {self.player_level}",
+                                                               f"Curent level is: {self.player_level}"), alignment=QtCore.Qt.AlignCenter)
+
+        self.balance_plus_button = QtWidgets.QPushButton(Translate.ru_eng("Нажмите для получения денег!",
+                                                                          "Click to get money!"))
+        self.up_level_button = QtWidgets.QPushButton(Translate.ru_eng("Нажмите для улучшения уровня",
+                                                                      "Click to upgrade your level"))
         self.style()
 
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -31,15 +37,19 @@ class MainWindow(QtWidgets.QWidget):
     @QtCore.Slot()
     def balance_plus(self):
         self.player_balance += self.player_level
-        self.main_text.setText(f"Your balance is {self.player_balance}")
+        self.update_ui()
     def up_level(self):
         if self.player_balance >= self.player_level * 100:
             self.player_balance -= self.player_level * 100
             self.player_level += 1
-            self.up_level_text.setText(f"Curent level is {self.player_level}")
-            self.main_text.setText("level is upgrade!")
+            self.main_text.setText(Translate.ru_eng("Уровень улучшен!", "Level is upgrade!"))
+    
         else:
-            self.main_text.setText("balance is too small to upgrade")
+            self.main_text.setText(Translate.ru_eng("Баланс слишком маленький для улучшения",
+                                                    "Balance is too small to upgrade"))
+
+
+
     def style(self):
         gruvbox_black = "#282828"
         gruvbox_blue = "#83a598"
@@ -81,7 +91,15 @@ class MainWindow(QtWidgets.QWidget):
                 font-size: 18px;
             }}
         """)
-
+    def update_ui(self):
+        self.main_text.setText(Translate.ru_eng(
+        f"Ваш баланс {self.player_balance}",
+        f"Your balance is {self.player_balance}"
+    ))
+        self.up_level_text.setText(Translate.ru_eng(
+        f"Нынешний уровень {self.player_level}",
+        f"Current level is {self.player_level}"
+    ))
 
 
 
