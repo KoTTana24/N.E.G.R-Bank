@@ -8,7 +8,7 @@ class GameData:
     balance = 0
     level = 1
 
-    brokerage_balance = 5000
+    brokerage_balance = 0
 
     stocks = {}
 
@@ -32,7 +32,7 @@ class GameData:
 
             cls.brokerage_balance = data.get(
                 "brokerage_balance",
-                5000
+                0
             )
 
             cls.stocks = data.get("stocks", {})
