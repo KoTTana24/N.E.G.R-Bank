@@ -4,6 +4,7 @@ from style import Style
 from game_data import GameData
 from main_window import MainWindow
 from casino import Casino
+from stocks import Stocks
 
 class MainMenu(QtWidgets.QWidget):
     def __init__(self):
@@ -20,10 +21,11 @@ class MainMenu(QtWidgets.QWidget):
 
         Style.style(self)
 
-        # Режимы: текст на кнопке, класс окна, минимальный уровень
+        # mode : text, window class, required level 
         self.modes = [
             (Translate.ru_eng("Тапалка", "Tapping"), MainWindow, 1),
-            (Translate.ru_eng("Казино", "Casino"), Casino, 3)
+            (Translate.ru_eng("Казино", "Casino"), Casino, 3),
+            (Translate.ru_eng("Акции","Stocks"), Stocks, 8)
         ]
 
         for text, cls, min_level in self.modes:

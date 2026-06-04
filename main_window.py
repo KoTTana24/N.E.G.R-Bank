@@ -17,16 +17,35 @@ class MainWindow(QtWidgets.QWidget):
         self.balance_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
         self.level_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
         self.tap_button = QtWidgets.QPushButton(Translate.ru_eng("Нажми!", "Click!"))
+        self.upgrade_button = QtWidgets.QPushButton(Translate.ru_eng("Нажми для повышения уровня!",
+                                                    "Click to upgrade level!")
+                                                    )
         self.tap_button.clicked.connect(self.tap)
-        
+        self.upgrade_button.clicked.connect(self.upgrade)
+
         self.layout.addWidget(self.menu_button)
         self.layout.addWidget(self.balance_label)
         self.layout.addWidget(self.level_label)
         self.layout.addWidget(self.tap_button)
+        self.layout.addWidget(self.upgrade_button)
 
         Style.style(self)
         self.update_ui()
         
+
+    def upgrade(self):
+        threshold = GameData.level * 100
+        if GameData.balance >= threshold:
+            GameData.balance -= threshold
+            GameData.level += 1
+            self.level_label.setText(Translate.ru_eng(f"Уровень улучшен до {GameData.level}",
+                                                      f"Level upgrade to {GameData.level}")
+                                                    )
+        
+        else:
+            self.level_label.setText(Translate.ru_eng(f"Вам не хватает {threshold - GameData.balance} для улучшения!",
+                                                      f"You're missing {threshold - GameData.balance} to upgrade")
+                                                    )
     def back_to_menu(self):
         from main_menu import MainMenu
 
@@ -37,14 +56,6 @@ class MainWindow(QtWidgets.QWidget):
     def tap(self):
         # Добавляем очки к балансу
         GameData.balance += GameData.level
-
-        # Проверяем возможность повышения уровня
-        threshold = GameData.level * 100
-        if GameData.balance >= threshold:
-            GameData.balance -= threshold
-            GameData.level += 1
-
-        # Сохраняем прогресс
         GameData.save()
         self.update_ui()
 
