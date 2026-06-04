@@ -79,7 +79,7 @@ class Stocks(QtWidgets.QWidget):
 
         self.dividend_timer = QtCore.QTimer()
         self.dividend_timer.timeout.connect(self.pay_dividends)
-        self.dividend_timer.start(60000)  # every minute
+        self.dividend_timer.start(300000)  # every minute
 
         self.update_ui()
 
