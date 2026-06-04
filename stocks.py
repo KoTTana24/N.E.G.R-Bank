@@ -7,9 +7,11 @@ from game_data import GameData
 
 
 class Stocks(QtWidgets.QWidget):
-
+    
     def __init__(self):
         super().__init__()
+
+
 
         self.setWindowTitle("Stocks")
 
@@ -73,11 +75,11 @@ class Stocks(QtWidgets.QWidget):
         # Таймеры
         self.price_timer = QtCore.QTimer()
         self.price_timer.timeout.connect(self.change_prices)
-        self.price_timer.start(60000)  # каждые 1 минута
+        self.price_timer.start(60000)  # every minute
 
         self.dividend_timer = QtCore.QTimer()
         self.dividend_timer.timeout.connect(self.pay_dividends)
-        self.dividend_timer.start(600000)  # каждые 10 минут
+        self.dividend_timer.start(60000)  # every minute
 
         self.update_ui()
 
@@ -146,7 +148,8 @@ class Stocks(QtWidgets.QWidget):
         amount, ok = QtWidgets.QInputDialog.getInt(
             self,
             Translate.ru_eng("Пополнить", "Deposit"),
-            Translate.ru_eng("Введите сумму для перевода на брокерский счёт:", "Enter amount to deposit:"),
+            Translate.ru_eng(f"Ваш баланс: {GameData.balance}. Введите сумму для перевода на брокерский счёт:",
+                             f"You'r balance is:{GameData.balance}. Enter amount to deposit:"),
             0, 0, GameData.balance
         )
         if ok and amount > 0:
