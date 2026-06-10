@@ -6,10 +6,11 @@ DATA_FILE = "player_data.json"
 class GameData:
     balance = 0
     level = 1
+    forest_level = 1
     brokerage_balance = 0
     stocks = {}
     stock_prices = {}
-    check_value = None  # контрольная переменная
+    check_value = None 
 
     @classmethod
     def load(cls):
@@ -23,6 +24,7 @@ class GameData:
 
             cls.balance = data.get("balance", 0)
             cls.level = data.get("level", 1)
+            cls.forest_level = data.get("forest_level", 1)
             cls.brokerage_balance = data.get("brokerage_balance", 0)
             cls.stocks = data.get("stocks", {})
             cls.stock_prices = data.get(
@@ -30,7 +32,6 @@ class GameData:
             )
             cls.check_value = data.get("check_value")
 
-            # проверяем целостность данных
             cls.verify_data()
 
         except Exception:
@@ -45,6 +46,7 @@ class GameData:
                 {
                     "balance": cls.balance,
                     "level": cls.level,
+                    "forest_level": cls.forest_level,
                     "brokerage_balance": cls.brokerage_balance,
                     "stocks": cls.stocks,
                     "stock_prices": cls.stock_prices,
@@ -57,9 +59,10 @@ class GameData:
 
     @classmethod
     def reset_data(cls):
-        """Обнуление всех данных"""
+        """reset player data ;)"""
         cls.balance = 0
         cls.level = 1
+        cls.forest_level = 1
         cls.brokerage_balance = 0
         cls.stocks = {}
         cls.stock_prices = {"negr_bank": 1000, "mine": 3000}
@@ -69,12 +72,12 @@ class GameData:
 
     @classmethod
     def update_check_value(cls):
-        """Вычисляет контрольное значение: (все числа × 8 − 1)"""
         total = 0
 
-        # суммируем все численные значения
+        # sum all
         total += cls.balance
         total += cls.level
+        total += cls.forest_level
         total += cls.brokerage_balance
         total += sum(cls.stocks.values())
         total += sum(cls.stock_prices.values())
@@ -83,10 +86,11 @@ class GameData:
 
     @classmethod
     def verify_data(cls):
-        """Проверяет контрольное значение. Если не совпадает — обнуляет данные"""
+        """"Check control value"""
         total = 0
         total += cls.balance
         total += cls.level
+        total += cls.forest_level
         total += cls.brokerage_balance
         total += sum(cls.stocks.values())
         total += sum(cls.stock_prices.values())
