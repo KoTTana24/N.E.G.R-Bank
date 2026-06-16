@@ -5,7 +5,7 @@ from game_data import GameData
 from main_window import MainWindow
 from casino import Casino
 from stocks import Stocks
-from jobs import Jobs
+from jobs import JobsMenu
 
 class MainMenu(QtWidgets.QWidget):
     def __init__(self):
@@ -26,7 +26,7 @@ class MainMenu(QtWidgets.QWidget):
         self.modes = [
             (Translate.ru_eng("Тапалка", "Tapping"), MainWindow, 1),
             (Translate.ru_eng("Казино", "Casino"), Casino, 3),
-            (Translate.ru_eng("Работы", "Jobs"), Jobs, 5),
+            (Translate.ru_eng("Работы", "Jobs"), JobsMenu, 5),
             (Translate.ru_eng("Акции","Stocks"), Stocks, 8)
         ]
 
