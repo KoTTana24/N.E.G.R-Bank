@@ -2,6 +2,7 @@ from PySide6 import QtWidgets, QtCore
 from translate import Translate
 from style import Style
 from game_data import GameData
+from game import Game
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -34,17 +35,18 @@ class MainWindow(QtWidgets.QWidget):
         
 
     def upgrade(self):
-        threshold = GameData.level * 100
-        if GameData.balance >= threshold:
-            GameData.balance -= threshold
-            GameData.level += 1
-            self.level_label.setText(Translate.ru_eng(f"Уровень улучшен до {GameData.level}",
-                                                      f"Level upgrade to {GameData.level}")
+        threshold = Game.level.value * 100
+        print(Game.level, Game.balance)
+        if Game.balance >= threshold:
+            Game.balance.sub(threshold)
+            Game.level.add(1)
+            self.level_label.setText(Translate.ru_eng(f"Уровень улучшен до {Game.level}",
+                                                      f"Level upgrade to {Game.level}")
                                                     )
         
         else:
-            self.level_label.setText(Translate.ru_eng(f"Вам не хватает {threshold - GameData.balance} для улучшения!",
-                                                      f"You're missing {threshold - GameData.balance} to upgrade")
+            self.level_label.setText(Translate.ru_eng(f"Вам не хватает {threshold - Game.balance.value} для улучшения!",
+                                                      f"You're missing {threshold - Game.balance.value} to upgrade")
                                                     )
     def back_to_menu(self):
         from main_menu import MainMenu
@@ -55,14 +57,14 @@ class MainWindow(QtWidgets.QWidget):
 
     def tap(self):
         # Добавляем очки к балансу
-        GameData.balance += GameData.level
+        Game.balance.add(Game.level.value)
         GameData.save()
         self.update_ui()
 
     def update_ui(self):
         self.balance_label.setText(
-            Translate.ru_eng(f"Баланс: {GameData.balance}", f"Balance: {GameData.balance}")
+            Translate.ru_eng(f"Баланс: {Game.balance}", f"Balance: {Game.balance}")
         )
         self.level_label.setText(
-            Translate.ru_eng(f"Уровень: {GameData.level}", f"Level: {GameData.level}")
+            Translate.ru_eng(f"Уровень: {Game.level}", f"Level: {Game.level}")
         )
