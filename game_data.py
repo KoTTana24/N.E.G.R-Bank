@@ -3,15 +3,51 @@ import os
 
 DATA_FILE = "player_data.json"
 
-class GameData:
-    balance = 0
-    level = 1
-    forest_level = 1
-    brokerage_balance = 0
-    stocks = {}
-    stock_prices = {}
-    check_value = None 
 
+class GameData:
+
+    # =========================
+    # DEFAULT STATE
+    # =========================
+    state = {
+        "player": {
+            "balance": 0,
+            "level": 1
+        },
+
+        "jobs": {
+            "forest_level": 1,
+            "tree_exp": 0
+        },
+
+        "business": {
+            "shop": {
+                "opened": False,
+                "employees": 0,
+                "inventory": {
+                    "fruits": 10,
+                    "vegetables": 10,
+                    "drinks": 10
+                }
+            }
+        },
+
+        "stocks": {
+            "brokerage_balance": 0,
+            "owned": {}
+        },
+
+        "market": {
+            "stock_prices": {
+                "negr_bank": 1000,
+                "mine": 3000
+            }
+        }
+    }
+
+    # =========================
+    # LOAD
+    # =========================
     @classmethod
     def load(cls):
         if not os.path.exists(DATA_FILE):
@@ -19,84 +55,88 @@ class GameData:
             return
 
         try:
-            with open(DATA_FILE, "r", encoding="utf-8") as file:
-                data = json.load(file)
-
-            cls.balance = data.get("balance", 0)
-            cls.level = data.get("level", 1)
-            cls.forest_level = data.get("forest_level", 1)
-            cls.brokerage_balance = data.get("brokerage_balance", 0)
-            cls.stocks = data.get("stocks", {})
-            cls.stock_prices = data.get(
-                "stock_prices", {"negr_bank": 1000, "mine": 3000}
-            )
-            cls.check_value = data.get("check_value")
-
-            cls.verify_data()
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                cls.state = json.load(f)
 
         except Exception:
-            cls.reset_data()
+            cls.state = {}
             cls.save()
 
+        cls.ensure_defaults()
+
+    # =========================
+    # SAVE
+    # =========================
     @classmethod
     def save(cls):
-        cls.update_check_value()
-        with open(DATA_FILE, "w", encoding="utf-8") as file:
-            json.dump(
-                {
-                    "balance": cls.balance,
-                    "level": cls.level,
-                    "forest_level": cls.forest_level,
-                    "brokerage_balance": cls.brokerage_balance,
-                    "stocks": cls.stocks,
-                    "stock_prices": cls.stock_prices,
-                    "check_value": cls.check_value
-                },
-                file,
-                indent=4,
-                ensure_ascii=False
-            )
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(cls.state, f, indent=4, ensure_ascii=False)
 
+    # =========================
+    # SAFE GET
+    # =========================
     @classmethod
-    def reset_data(cls):
-        """reset player data ;)"""
-        cls.balance = 0
-        cls.level = 1
-        cls.forest_level = 1
-        cls.brokerage_balance = 0
-        cls.stocks = {}
-        cls.stock_prices = {"negr_bank": 1000, "mine": 3000}
-        cls.check_value = None
+    def get(cls, path, default=0):
+        keys = path.split(".")
+        value = cls.state
 
-    # ------------------------ Новый функционал ------------------------
+        try:
+            for k in keys:
+                value = value[k]
+            return value
+        except Exception:
+            return default
 
+    # =========================
+    # SAFE SET
+    # =========================
     @classmethod
-    def update_check_value(cls):
-        total = 0
+    def set(cls, path, value):
+        keys = path.split(".")
+        obj = cls.state
 
-        # sum all
-        total += cls.balance
-        total += cls.level
-        total += cls.forest_level
-        total += cls.brokerage_balance
-        total += sum(cls.stocks.values())
-        total += sum(cls.stock_prices.values())
+        for k in keys[:-1]:
+            obj = obj.setdefault(k, {})
 
-        cls.check_value = total * 8 - 1
+        obj[keys[-1]] = value
 
+    # =========================
+    # DEFAULT FIX (ВАЖНО)
+    # =========================
     @classmethod
-    def verify_data(cls):
-        """"Check control value"""
-        total = 0
-        total += cls.balance
-        total += cls.level
-        total += cls.forest_level
-        total += cls.brokerage_balance
-        total += sum(cls.stocks.values())
-        total += sum(cls.stock_prices.values())
+    def ensure_defaults(cls):
 
-        calculated = total * 8 - 1
+        # PLAYER
+        cls.state.setdefault("player", {})
+        cls.state["player"].setdefault("balance", 0)
+        cls.state["player"].setdefault("level", 1)
 
-        if cls.check_value != calculated:
-            cls.reset_data()
-            cls.save()
+        # JOBS
+        cls.state.setdefault("jobs", {})
+        cls.state["jobs"].setdefault("forest_level", 1)
+        cls.state["jobs"].setdefault("tree_exp", 0)
+
+        # BUSINESS
+        cls.state.setdefault("business", {})
+        cls.state["business"].setdefault("shop", {})
+        shop = cls.state["business"]["shop"]
+
+        shop.setdefault("opened", False)
+        shop.setdefault("employees", 0)
+        shop.setdefault("inventory", {
+            "fruits": 10,
+            "vegetables": 10,
+            "drinks": 10
+        })
+
+        # STOCKS
+        cls.state.setdefault("stocks", {})
+        cls.state["stocks"].setdefault("brokerage_balance", 0)
+        cls.state["stocks"].setdefault("owned", {})
+
+        # MARKET
+        cls.state.setdefault("market", {})
+        cls.state["market"].setdefault("stock_prices", {
+            "negr_bank": 1000,
+            "mine": 3000
+        })

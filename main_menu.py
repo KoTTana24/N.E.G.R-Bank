@@ -6,6 +6,8 @@ from main_window import MainWindow
 from casino import Casino
 from stocks import Stocks
 from jobs import JobsMenu
+from shop import Shop
+from game import Game
 
 class MainMenu(QtWidgets.QWidget):
     def __init__(self):
@@ -27,7 +29,8 @@ class MainMenu(QtWidgets.QWidget):
             (Translate.ru_eng("Тапалка", "Tapping"), MainWindow, 1),
             (Translate.ru_eng("Казино", "Casino"), Casino, 3),
             (Translate.ru_eng("Работы", "Jobs"), JobsMenu, 5),
-            (Translate.ru_eng("Акции","Stocks"), Stocks, 8)
+            (Translate.ru_eng("Акции","Stocks"), Stocks, 8),
+            (Translate.ru_eng("Бизнес", "Bussiness"), Shop, 1)
         ]
 
         for text, cls, min_level in self.modes:
@@ -36,7 +39,7 @@ class MainMenu(QtWidgets.QWidget):
             self.layout.addWidget(button)
 
     def open_mode(self, window_class, min_level):
-        if GameData.level < min_level:
+        if int(Game.level) < min_level:
             QtWidgets.QMessageBox.warning(
                 self,
                 Translate.ru_eng("Ошибка", "Error"),
