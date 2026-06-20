@@ -1,5 +1,6 @@
 from PySide6 import QtWidgets, QtCore
 from translate import Translate
+from style import Style
 
 class WelcomeWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -16,6 +17,7 @@ class WelcomeWindow(QtWidgets.QWidget):
             "Choose the language / Выберите язык",
             alignment=QtCore.Qt.AlignCenter
         )
+        Style.style(self)
 
         self.ru_button = QtWidgets.QPushButton("Русский / Russian")
         self.en_button = QtWidgets.QPushButton("English / Английский")

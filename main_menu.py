@@ -30,7 +30,7 @@ class MainMenu(QtWidgets.QWidget):
             (Translate.ru_eng("Казино", "Casino"), Casino, 3),
             (Translate.ru_eng("Работы", "Jobs"), JobsMenu, 5),
             (Translate.ru_eng("Акции","Stocks"), Stocks, 8),
-            (Translate.ru_eng("Бизнес", "Bussiness"), Shop, 1)
+            (Translate.ru_eng("Бизнес", "Bussiness"), Shop, 15)
         ]
 
         for text, cls, min_level in self.modes:

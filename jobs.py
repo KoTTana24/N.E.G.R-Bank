@@ -101,14 +101,14 @@ class Lumberjack(QtWidgets.QWidget):
 
         if self.tree_hp <= 0:
 
-            self.tree_hp = 5
+            self.tree_hp = 25
             self.tree_felled_count += 1
 
-            # 💰 доход
+            
             Game.balance.value += (
                 Game.level.value *
                 Game.forest.level.value *
-                10
+                2
             )
 
             self.upgrade_level()
