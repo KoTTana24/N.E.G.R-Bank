@@ -1,4 +1,13 @@
 from game_data import GameData
+from PySide6.QtCore import Signal, QObject
+
+
+class GameSignals(QObject):
+    language_changed = Signal()
+    settings_changed = Signal()
+
+
+signals = GameSignals()
 
 
 class Value:
@@ -58,6 +67,7 @@ class Value:
     def __rsub__(self, other):
         return other - (self.value or 0)
 
+
 class DictValue:
     def __init__(self, path):
         self.path = path
@@ -68,6 +78,7 @@ class DictValue:
     def set(self, key, value):
         GameData.set(f"{self.path}.{key}", value)
 
+
 class Forest:
     level = Value("jobs.forest_level")
     exp = Value("jobs.tree_exp")
@@ -76,12 +87,18 @@ class Forest:
 class Stock:
     brokerage = Value("stocks.brokerage_balance")
 
+
 class Business:
     shop_employees = Value("business.shop.employees")
     inventory = Value("business.shop.inventory")
 
 
+class Settings:
+    padding = Value("settings.padding")
+
+
 class Game:
+    signals = GameSignals()
 
     @staticmethod
     def save():
@@ -95,10 +112,15 @@ class Game:
     level = Value("player.level")
 
     brokerage = Value("stocks.brokerage_balance")  #
-    
+
     stock_price = Value("market.stock_prices")
     stock_owned = Value("stocks.owned")
 
+    settings_padding = Value("settings.padding")
+    language = Value("settings.language")
+    used_promos = Value("settings.used_promos")  # список использованных кодов
+
+    settings = Settings()
     forest = Forest()
     stock = Stock()
     business = Business()

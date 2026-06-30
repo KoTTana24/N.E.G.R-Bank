@@ -5,20 +5,18 @@ from translate import Translate
 from style import Style
 from game import Game
 from game_data import GameData
+from ui_manager import UIManager
 
 
 class Shop(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
 
         self.setWindowTitle("Shop Tycoon")
         self.layout = QtWidgets.QVBoxLayout(self)
 
-        self.products = {
-            "fruits": 50,
-            "vegetables": 30,
-            "drinks": 20
-        }
+        self.products = {"fruits": 50, "vegetables": 30, "drinks": 20}
 
         self.ui()
 
@@ -36,37 +34,29 @@ class Shop(QtWidgets.QWidget):
     def ui(self):
         self.balance_label = QtWidgets.QLabel()
         self.emp_label = QtWidgets.QLabel()
-        
-        self.menu_button = QtWidgets.QPushButton(
-            Translate.ru_eng("В меню", "Menu")
-        )
-        
+
+        self.menu_button = QtWidgets.QPushButton(Translate.ru_eng("В меню", "Menu"))
+
         self.menu_button.clicked.connect(self.back_to_menu)
-        
+
         self.layout.addWidget(self.menu_button)
 
+        self.buy_fruits = QtWidgets.QPushButton(
+            Translate.ru_eng("Купить фрукты ($50)", "Buy fruits ($50)")
+        )
+        self.buy_veg = QtWidgets.QPushButton(
+            Translate.ru_eng("Купить овощи ($30)", "Buy vegetables ($30)")
+        )
+        self.buy_drinks = QtWidgets.QPushButton(
+            Translate.ru_eng("Купить напитки ($20)", "Buy drinks ($20)")
+        )
 
-        self.buy_fruits = QtWidgets.QPushButton(Translate.ru_eng(
-            "Купить фрукты ($50)",
-            "Buy fruits ($50)"
-        ))
-        self.buy_veg = QtWidgets.QPushButton(Translate.ru_eng(
-            "Купить овощи ($30)",
-            "Buy vegetables ($30)"
-        ))
-        self.buy_drinks = QtWidgets.QPushButton(Translate.ru_eng(
-            "Купить напитки ($20)",
-            "Buy drinks ($20)"
-        ))
-
-        self.hire_btn = QtWidgets.QPushButton(Translate.ru_eng(
-            "Нанять сотрудника ($1000)",
-            "Hire employee ($1000)"
-        ))
-        self.fire_btn = QtWidgets.QPushButton(Translate.ru_eng(
-            "Уволить сотрудника",
-            "Fire employee"
-        ))
+        self.hire_btn = QtWidgets.QPushButton(
+            Translate.ru_eng("Нанять сотрудника ($1000)", "Hire employee ($1000)")
+        )
+        self.fire_btn = QtWidgets.QPushButton(
+            Translate.ru_eng("Уволить сотрудника", "Fire employee")
+        )
 
         self.layout.addWidget(self.balance_label)
         self.layout.addWidget(self.buy_fruits)
@@ -88,16 +78,13 @@ class Shop(QtWidgets.QWidget):
     # ---------------- UI UPDATE ----------------
     def update_ui(self):
         self.balance_label.setText(
-            Translate.ru_eng(
-                f"Баланс: {Game.balance}",
-                f"Balance: {Game.balance}"
-            )
+            Translate.ru_eng(f"Баланс: {Game.balance}", f"Balance: {Game.balance}")
         )
 
         self.emp_label.setText(
             Translate.ru_eng(
                 f"Сотрудники: {Game.business.shop_employees}",
-                f"Employees: {Game.business.shop_employees}"
+                f"Employees: {Game.business.shop_employees}",
             )
         )
 
@@ -114,13 +101,12 @@ class Shop(QtWidgets.QWidget):
         path = f"business.shop.inventory.{product}"
         current = Game.balance  # ❌ FIX ниже
 
-        
-        #current = Game.business.inventory[product]
-        
+        # current = Game.business.inventory[product]
+
         current = GameData.get(f"business.shop.inventory.{product}")
         GameData.set(f"business.shop.inventory.{product}", current + 1)
 
-        #Game.business.inventory[product] = current + 1
+        # Game.business.inventory[product] = current + 1
 
         Game.save()
         self.update_ui()
@@ -135,8 +121,7 @@ class Shop(QtWidgets.QWidget):
 
         Game.balance.sub(1000)
         GameData.set(
-            "business.shop.employees",
-            GameData.get("business.shop.employees") + 1
+            "business.shop.employees", GameData.get("business.shop.employees") + 1
         )
 
         Game.save()
@@ -158,7 +143,6 @@ class Shop(QtWidgets.QWidget):
 
         for _ in range(customers):
             for _ in range(random.randint(1, 5)):
-
                 product = random.choice(list(self.products.keys()))
                 path = f"business.shop.inventory.{product}"
 
@@ -166,7 +150,7 @@ class Shop(QtWidgets.QWidget):
 
                 if stock > 0:
                     GameData.set(path, stock - 1)
-                    income += self.products[product]   # 💥 ВАЖНО
+                    income += self.products[product]  # 💥 ВАЖНО
 
         # сотрудники
         employees = GameData.get("business.shop.employees")
@@ -199,14 +183,11 @@ class Shop(QtWidgets.QWidget):
 
         Game.business.shop_employees = 0
 
-        Game.business.inventory = {
-            "fruits": 10,
-            "vegetables": 10,
-            "drinks": 10
-        }
+        Game.business.inventory = {"fruits": 10, "vegetables": 10, "drinks": 10}
 
         Game.save()
         self.update_ui()
+
     def back_to_menu(self):
         from main_menu import MainMenu
 

@@ -1,3 +1,6 @@
+from game import Game
+
+
 class Style:
     def style(self):
         gruvbox_black = "#282828"
@@ -8,6 +11,7 @@ class Style:
         gruvbox_red = "#fb4934"
         gruvbox_white = "#d5c4a1"
         gruvbox_yellow = "#fabd2f"
+        padding = Game.settings_padding.value
         self.setStyleSheet(f"""
             QWidget {{
                 background-color: {gruvbox_white};
@@ -18,8 +22,8 @@ class Style:
                 background-color: {gruvbox_yellow};
                 color: {gruvbox_black};
                 border: none;
-                border-radius: 10px;
-                padding: 10px;
+                border-radius: 15px;
+                padding: {padding}px;
                 font-size: 16px;
             }}
 

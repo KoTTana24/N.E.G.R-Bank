@@ -3,24 +3,25 @@ from translate import Translate
 from style import Style
 from game_data import GameData
 from game import Game
+from ui_manager import UIManager
+
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
         self.setWindowTitle("Tapping Game")
         self.layout = QtWidgets.QVBoxLayout(self)
-        
-        self.menu_button = QtWidgets.QPushButton(
-        Translate.ru_eng("В меню", "Menu")
-        )
+
+        self.menu_button = QtWidgets.QPushButton(Translate.ru_eng("В меню", "Menu"))
 
         self.menu_button.clicked.connect(self.back_to_menu)
         self.balance_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
         self.level_label = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
         self.tap_button = QtWidgets.QPushButton(Translate.ru_eng("Нажми!", "Click!"))
-        self.upgrade_button = QtWidgets.QPushButton(Translate.ru_eng("Нажми для повышения уровня!",
-                                                    "Click to upgrade level!")
-                                                    )
+        self.upgrade_button = QtWidgets.QPushButton(
+            Translate.ru_eng("Нажми для повышения уровня!", "Click to upgrade level!")
+        )
         self.tap_button.clicked.connect(self.tap)
         self.upgrade_button.clicked.connect(self.upgrade)
 
@@ -32,7 +33,6 @@ class MainWindow(QtWidgets.QWidget):
 
         Style.style(self)
         self.update_ui()
-        
 
     def upgrade(self):
         threshold = Game.level.value * 100
@@ -40,14 +40,20 @@ class MainWindow(QtWidgets.QWidget):
         if Game.balance >= threshold:
             Game.balance.sub(threshold)
             Game.level.add(1)
-            self.level_label.setText(Translate.ru_eng(f"Уровень улучшен до {Game.level}",
-                                                      f"Level upgrade to {Game.level}")
-                                                    )
-        
+            self.level_label.setText(
+                Translate.ru_eng(
+                    f"Уровень улучшен до {Game.level}", f"Level upgrade to {Game.level}"
+                )
+            )
+
         else:
-            self.level_label.setText(Translate.ru_eng(f"Вам не хватает {threshold - Game.balance.value} для улучшения!",
-                                                      f"You're missing {threshold - Game.balance.value} to upgrade")
-                                                    )
+            self.level_label.setText(
+                Translate.ru_eng(
+                    f"Вам не хватает {threshold - Game.balance.value} для улучшения!",
+                    f"You're missing {threshold - Game.balance.value} to upgrade",
+                )
+            )
+
     def back_to_menu(self):
         from main_menu import MainMenu
 
@@ -56,7 +62,7 @@ class MainWindow(QtWidgets.QWidget):
         self.close()
 
     def tap(self):
-        # Добавляем очки к балансу
+
         Game.balance.add(Game.level.value)
         GameData.save()
         self.update_ui()

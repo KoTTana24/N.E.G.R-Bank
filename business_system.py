@@ -1,10 +1,12 @@
 from PySide6 import QtCore
 from game_data import GameData
+from ui_manager import UIManager
 
 
 class BusinessSystem(QtCore.QObject):
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
 
         self.businesses = {}
 

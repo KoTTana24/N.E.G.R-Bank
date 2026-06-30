@@ -1,142 +1,93 @@
 import json
 import os
 
-DATA_FILE = "player_data.json"
-
 
 class GameData:
+    FILE = "player_data.json"
 
-    # =========================
-    # DEFAULT STATE
-    # =========================
-    state = {
-        "player": {
-            "balance": 0,
-            "level": 1
-        },
+    data = {}
 
-        "jobs": {
-            "forest_level": 1,
-            "tree_exp": 0
-        },
+    # ---------------- LOAD ----------------
+    @staticmethod
+    def load():
 
-        "business": {
-            "shop": {
-                "opened": False,
-                "employees": 0,
-                "inventory": {
-                    "fruits": 10,
-                    "vegetables": 10,
-                    "drinks": 10
-                }
-            }
-        },
-
-        "stocks": {
-            "brokerage_balance": 0,
-            "owned": {}
-        },
-
-        "market": {
-            "stock_prices": {
-                "negr_bank": 1000,
-                "mine": 3000
-            }
-        }
-    }
-
-    # =========================
-    # LOAD
-    # =========================
-    @classmethod
-    def load(cls):
-        if not os.path.exists(DATA_FILE):
-            cls.save()
+        if not os.path.exists(GameData.FILE):
+            GameData.data = {}
+            GameData.ensure_defaults()
+            GameData.save()
             return
 
-        try:
-            with open(DATA_FILE, "r", encoding="utf-8") as f:
-                cls.state = json.load(f)
+        with open(GameData.FILE, "r") as f:
+            GameData.data = json.load(f)
 
-        except Exception:
-            cls.state = {}
-            cls.save()
+        GameData.ensure_defaults()
 
-        cls.ensure_defaults()
+    # ---------------- SAVE ----------------
+    @staticmethod
+    def save():
 
-    # =========================
-    # SAVE
-    # =========================
-    @classmethod
-    def save(cls):
-        with open(DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump(cls.state, f, indent=4, ensure_ascii=False)
+        with open(GameData.FILE, "w") as f:
+            json.dump(GameData.data, f, indent=4)
 
-    # =========================
-    # SAFE GET
-    # =========================
-    @classmethod
-    def get(cls, path, default=0):
+    # ---------------- GET ----------------
+    @staticmethod
+    def get(path, default=None):
+
         keys = path.split(".")
-        value = cls.state
+        obj = GameData.data
 
-        try:
-            for k in keys:
-                value = value[k]
-            return value
-        except Exception:
-            return default
+        for k in keys:
+            if isinstance(obj, dict) and k in obj:
+                obj = obj[k]
+            else:
+                return default
 
-    # =========================
-    # SAFE SET
-    # =========================
-    @classmethod
-    def set(cls, path, value):
+        return obj
+
+    # ---------------- SET ----------------
+    @staticmethod
+    def set(path, value):
+
         keys = path.split(".")
-        obj = cls.state
+        obj = GameData.data
 
         for k in keys[:-1]:
-            obj = obj.setdefault(k, {})
+            if k not in obj or not isinstance(obj[k], dict):
+                obj[k] = {}
+            obj = obj[k]
 
         obj[keys[-1]] = value
 
-    # =========================
-    # DEFAULT FIX (ВАЖНО)
-    # =========================
-    @classmethod
-    def ensure_defaults(cls):
+    # ---------------- DEFAULTS ----------------
+    @staticmethod
+    def ensure_defaults():
 
-        # PLAYER
-        cls.state.setdefault("player", {})
-        cls.state["player"].setdefault("balance", 0)
-        cls.state["player"].setdefault("level", 1)
+        defaults = {
+            "player": {"balance": 1000, "level": 1},
+            "stocks": {
+                "brokerage_balance": 0,
+                "owned": {},
+                "stock_prices": {"negr_bank": 1000, "mine": 500},
+            },
+            "business": {
+                "shop": {
+                    "employees": 0,
+                    "inventory": {"fruits": 10, "vegetables": 10, "drinks": 10},
+                }
+            },
+            "settings": {"padding": 10, "language": "ru"},
+            "used_promos": [],
+        }
 
-        # JOBS
-        cls.state.setdefault("jobs", {})
-        cls.state["jobs"].setdefault("forest_level", 1)
-        cls.state["jobs"].setdefault("tree_exp", 0)
+        GameData._merge_defaults(defaults, GameData.data)
 
-        # BUSINESS
-        cls.state.setdefault("business", {})
-        cls.state["business"].setdefault("shop", {})
-        shop = cls.state["business"]["shop"]
+    # ---------------- MERGE ----------------
+    @staticmethod
+    def _merge_defaults(defaults, target):
 
-        shop.setdefault("opened", False)
-        shop.setdefault("employees", 0)
-        shop.setdefault("inventory", {
-            "fruits": 10,
-            "vegetables": 10,
-            "drinks": 10
-        })
+        for key, value in defaults.items():
+            if key not in target:
+                target[key] = value
 
-        # STOCKS
-        cls.state.setdefault("stocks", {})
-        cls.state["stocks"].setdefault("brokerage_balance", 0)
-        cls.state["stocks"].setdefault("owned", {})
-
-        # MARKET
-        cls.state.setdefault("market", {})
-        cls.state["market"].setdefault("stock_prices", {
-            "negr_bank": 1000,
-            "mine": 3000
-        })
+            elif isinstance(value, dict):
+                GameData._merge_defaults(value, target[key])

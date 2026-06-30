@@ -3,19 +3,20 @@ from PySide6 import QtWidgets, QtCore
 from translate import Translate
 from style import Style
 from game import Game
+from ui_manager import UIManager
 
 
 # ---------------- JOB MENU ----------------
 class JobsMenu(QtWidgets.QWidget):
-
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
 
         self.layout = QtWidgets.QVBoxLayout(self)
 
         self.label = QtWidgets.QLabel(
             Translate.ru_eng("Выберите работу", "Choose job"),
-            alignment=QtCore.Qt.AlignCenter
+            alignment=QtCore.Qt.AlignCenter,
         )
 
         self.layout.addWidget(self.label)
@@ -23,19 +24,11 @@ class JobsMenu(QtWidgets.QWidget):
         Style.style(self)
 
         self.modes = [
-            {
-                "ru": "Лесоруб",
-                "en": "Lumberjack",
-                "class": Lumberjack,
-                "level": 5
-            }
+            {"ru": "Лесоруб", "en": "Lumberjack", "class": Lumberjack, "level": 5}
         ]
 
         for mode in self.modes:
-
-            btn = QtWidgets.QPushButton(
-                Translate.ru_eng(mode["ru"], mode["en"])
-            )
+            btn = QtWidgets.QPushButton(Translate.ru_eng(mode["ru"], mode["en"]))
 
             btn.clicked.connect(
                 lambda _, m=mode: self.open_mode(m["class"], m["level"])
@@ -50,9 +43,8 @@ class JobsMenu(QtWidgets.QWidget):
                 self,
                 "Error",
                 Translate.ru_eng(
-                    f"Нужен уровень {min_level}",
-                    f"Level {min_level} required"
-                )
+                    f"Нужен уровень {min_level}", f"Level {min_level} required"
+                ),
             )
             return
 
@@ -63,7 +55,6 @@ class JobsMenu(QtWidgets.QWidget):
 
 # ---------------- LUMBERJACK ----------------
 class Lumberjack(QtWidgets.QWidget):
-
     def __init__(self):
         super().__init__()
 
@@ -72,17 +63,13 @@ class Lumberjack(QtWidgets.QWidget):
 
         self.layout = QtWidgets.QVBoxLayout(self)
 
-        self.menu_button = QtWidgets.QPushButton(
-            Translate.ru_eng("В меню", "Menu")
-        )
+        self.menu_button = QtWidgets.QPushButton(Translate.ru_eng("В меню", "Menu"))
 
         self.chop_button = QtWidgets.QPushButton(
             Translate.ru_eng("Рубить дерево", "Chop tree")
         )
 
-        self.status = QtWidgets.QLabel(
-            alignment=QtCore.Qt.AlignCenter
-        )
+        self.status = QtWidgets.QLabel(alignment=QtCore.Qt.AlignCenter)
 
         self.menu_button.clicked.connect(self.back_to_menu)
         self.chop_button.clicked.connect(self.chop)
@@ -100,16 +87,10 @@ class Lumberjack(QtWidgets.QWidget):
         self.tree_hp -= 1
 
         if self.tree_hp <= 0:
-
-            self.tree_hp = 25
+            self.tree_hp = 20
             self.tree_felled_count += 1
 
-            
-            Game.balance.value += (
-                Game.level.value *
-                Game.forest.level.value *
-                2
-            )
+            Game.balance.value += Game.level.value * Game.forest.level.value * 2
 
             self.upgrade_level()
             Game.save()
@@ -119,8 +100,7 @@ class Lumberjack(QtWidgets.QWidget):
     # ---------------- LEVEL UP ----------------
     def upgrade_level(self):
 
-        if self.tree_felled_count >= 10:
-
+        if self.tree_felled_count >= 7:
             Game.forest.level.value += 1
             self.tree_felled_count = 0
 
@@ -134,10 +114,9 @@ class Lumberjack(QtWidgets.QWidget):
                 f"Лесоруб: {Game.forest.level.value}\n"
                 f"Баланс: {Game.balance.value}\n"
                 f"Опыт: {self.tree_felled_count}/10",
-
                 f"Lumberjack: {Game.forest.level.value}\n"
                 f"Balance: {Game.balance.value}\n"
-                f"XP: {self.tree_felled_count}/10"
+                f"XP: {self.tree_felled_count}/10",
             )
         )
 

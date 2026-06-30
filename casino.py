@@ -4,20 +4,19 @@ from PySide6 import QtWidgets, QtCore
 from style import Style
 from game import Game
 from translate import Translate
+from ui_manager import UIManager
 
 
 class Casino(QtWidgets.QWidget):
-
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
 
         self.setWindowTitle("Casino")
         self.layout = QtWidgets.QVBoxLayout(self)
 
         # MENU
-        self.menu_button = QtWidgets.QPushButton(
-            Translate.ru_eng("В меню", "Menu")
-        )
+        self.menu_button = QtWidgets.QPushButton(Translate.ru_eng("В меню", "Menu"))
         self.menu_button.clicked.connect(self.back_to_menu)
 
         # UI
@@ -25,7 +24,7 @@ class Casino(QtWidgets.QWidget):
 
         self.text = QtWidgets.QLabel(
             Translate.ru_eng("Нажмите кнопку", "Press button"),
-            alignment=QtCore.Qt.AlignCenter
+            alignment=QtCore.Qt.AlignCenter,
         )
 
         self.line_edit = QtWidgets.QLineEdit()
@@ -33,9 +32,7 @@ class Casino(QtWidgets.QWidget):
             Translate.ru_eng("Введите ставку", "Enter bet")
         )
 
-        self.button = QtWidgets.QPushButton(
-            Translate.ru_eng("Крутить", "Spin")
-        )
+        self.button = QtWidgets.QPushButton(Translate.ru_eng("Крутить", "Spin"))
 
         self.layout.addWidget(self.menu_button)
         self.layout.addWidget(self.balance_label)
@@ -65,8 +62,7 @@ class Casino(QtWidgets.QWidget):
 
         self.balance_label.setText(
             Translate.ru_eng(
-                f"Баланс: {Game.balance.value}",
-                f"Balance: {Game.balance.value}"
+                f"Баланс: {Game.balance.value}", f"Balance: {Game.balance.value}"
             )
         )
 
@@ -77,9 +73,7 @@ class Casino(QtWidgets.QWidget):
         text = self.line_edit.text()
 
         if not text.isdigit():
-            self.text.setText(
-                Translate.ru_eng("Введите число!", "Enter a number!")
-            )
+            self.text.setText(Translate.ru_eng("Введите число!", "Enter a number!"))
             return
 
         bet = int(text)

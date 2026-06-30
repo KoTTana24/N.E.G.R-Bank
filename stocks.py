@@ -5,28 +5,25 @@ from translate import Translate
 from style import Style
 from game import Game
 from game_data import GameData
+from ui_manager import UIManager
 
 
 class Stocks(QtWidgets.QWidget):
-
     def __init__(self):
         super().__init__()
+        UIManager.register(self)
 
         self.setWindowTitle("Stocks")
 
         self.stocks_data = {
             "negr_bank": {"ru": "Н.Е.Г.Р Банк", "en": "N.E.G.R Bank"},
-            "mine": {"ru": "Шахта", "en": "Mine"}
+            "mine": {"ru": "Шахта", "en": "Mine"},
         }
 
         self.layout = QtWidgets.QVBoxLayout(self)
 
         # MENU
-        self.menu_button = QtWidgets.QPushButton(
-            Translate.ru_eng("В меню", "Menu")
-        )
-
-
+        self.menu_button = QtWidgets.QPushButton(Translate.ru_eng("В меню", "Menu"))
 
         self.menu_button.clicked.connect(self.back_to_menu)
         self.layout.addWidget(self.menu_button)
@@ -41,16 +38,15 @@ class Stocks(QtWidgets.QWidget):
 
         self.deposit_button.clicked.connect(self.deposit)
         self.withdraw_button.clicked.connect(self.withdraw)
-        
+
         self.layout.addWidget(self.deposit_button)
         self.layout.addWidget(self.withdraw_button)
-
 
         # BALANCE LABEL
         self.balance_label = QtWidgets.QLabel()
         self.layout.addWidget(self.balance_label)
 
-        # PORTFOLIO 
+        # PORTFOLIO
         self.portfolio_button = QtWidgets.QPushButton(
             Translate.ru_eng("Портфель", "Portfolio")
         )
@@ -66,13 +62,13 @@ class Stocks(QtWidgets.QWidget):
             btn.clicked.connect(lambda _, sid=stock_id: self.buy_stock(sid))
             self.stock_buttons[stock_id] = btn
             self.layout.addWidget(btn)
-        
+
         Style.style(self)
 
         # TIMERS
         self.price_timer = QtCore.QTimer()
         self.price_timer.timeout.connect(self.change_prices)
-        self.price_timer.start(60000)
+        self.price_timer.start(20000)
 
         self.dividend_timer = QtCore.QTimer()
         self.dividend_timer.timeout.connect(self.pay_dividends)
@@ -86,7 +82,7 @@ class Stocks(QtWidgets.QWidget):
         self.balance_label.setText(
             Translate.ru_eng(
                 f"Брокерский баланс: {Game.brokerage.value}",
-                f"Brokerage balance: {Game.brokerage.value}"
+                f"Brokerage balance: {Game.brokerage.value}",
             )
         )
 
@@ -94,8 +90,7 @@ class Stocks(QtWidgets.QWidget):
             price = Game.stock_price.value.get(stock_id, 1000)
 
             name = Translate.ru_eng(
-                self.stocks_data[stock_id]["ru"],
-                self.stocks_data[stock_id]["en"]
+                self.stocks_data[stock_id]["ru"], self.stocks_data[stock_id]["en"]
             )
 
             btn.setText(f"{name}: {price}")
@@ -124,15 +119,13 @@ class Stocks(QtWidgets.QWidget):
             lines = []
 
             for stock_id in self.stocks_data:
-
                 amount = GameData.get(f"stocks.owned.{stock_id}")
 
                 if amount <= 0:
                     continue
 
                 name = Translate.ru_eng(
-                    self.stocks_data[stock_id]["ru"],
-                    self.stocks_data[stock_id]["en"]
+                    self.stocks_data[stock_id]["ru"], self.stocks_data[stock_id]["en"]
                 )
 
                 lines.append(f"{name}: {amount}")
@@ -150,6 +143,7 @@ class Stocks(QtWidgets.QWidget):
         refresh()
 
         dialog.exec()
+
     # ---------------- BUY ----------------
     def buy_stock(self, stock_id):
 
@@ -188,14 +182,10 @@ class Stocks(QtWidgets.QWidget):
     def deposit(self):
 
         amount, ok = QtWidgets.QInputDialog.getInt(
-            self,
-            "Deposit",
-            f"Balance: {Game.balance.value}",
-            0, 0, Game.balance.value
+            self, "Deposit", f"Balance: {Game.balance.value}", 0, 0, Game.balance.value
         )
 
         if ok and amount > 0:
-
             Game.balance.value -= amount
             Game.brokerage.value += amount
 
@@ -206,14 +196,10 @@ class Stocks(QtWidgets.QWidget):
     def withdraw(self):
 
         amount, ok = QtWidgets.QInputDialog.getInt(
-            self,
-            "Withdraw",
-            "Amount:",
-            0, 0, Game.brokerage.value
+            self, "Withdraw", "Amount:", 0, 0, Game.brokerage.value
         )
 
         if ok and amount > 0:
-
             Game.balance.value += amount
             Game.brokerage.value -= amount
 
@@ -224,7 +210,6 @@ class Stocks(QtWidgets.QWidget):
     def change_prices(self):
 
         for stock_id in self.stocks_data:
-
             price = Game.stock_price.value.get(stock_id, 1000)
             change = random.randint(1, 5)
 
@@ -244,7 +229,6 @@ class Stocks(QtWidgets.QWidget):
         total = 0
 
         for stock_id in self.stocks_data:
-
             amount = Game.stock_owned.value.get(stock_id, 0)
             price = Game.stock_price.value.get(stock_id, 1000)
 
