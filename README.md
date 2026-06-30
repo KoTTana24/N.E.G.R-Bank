@@ -43,3 +43,9 @@ Clone repo and
 ```sh
 python3 main.py
 ```
+
+# Codes
+## money100 - 100 money
+## rich - 1000 money
+## negr - 1 level
+## first_realese - 10000 money, 3 level
